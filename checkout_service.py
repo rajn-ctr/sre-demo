@@ -28,6 +28,11 @@ def call_payment_gateway(order_id: str, amount_cents: int) -> dict:
             continue
 
 
+@app.route("/health", methods=["GET"])
+def health():
+    return jsonify({"status": "ok"})
+
+
 @app.route("/checkout", methods=["POST"])
 def checkout():
     payload = request.get_json(force=True)
