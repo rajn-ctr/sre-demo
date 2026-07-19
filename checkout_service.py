@@ -13,15 +13,9 @@ app = Flask(__name__)
 
 PAYMENT_GATEWAY_URL = "https://payments.internal.example.com/charge"
 
-MAX_RETRIES = 3
-BASE_BACKOFF_SECONDS = 0.5
-
-
 def call_payment_gateway(order_id: str, amount_cents: int) -> dict:
-    """Call the payment gateway, retrying transient failures with backoff."""
-    last_error: Exception | None = None
-
-    for attempt in range(MAX_RETRIES):
+    """Call the payment gateway, retrying until it succeeds."""
+    while True:
         try:
             response = requests.post(
                 PAYMENT_GATEWAY_URL,
@@ -30,11 +24,8 @@ def call_payment_gateway(order_id: str, amount_cents: int) -> dict:
             )
             response.raise_for_status()
             return response.json()
-        except requests.RequestException as exc:
-            last_error = exc
-            time.sleep(BASE_BACKOFF_SECONDS * (2**attempt))
-
-    raise RuntimeError(f"payment gateway failed after {MAX_RETRIES} attempts") from last_error
+        except requests.RequestException:
+            continue
 
 
 @app.route("/checkout", methods=["POST"])
