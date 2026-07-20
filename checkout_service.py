@@ -20,7 +20,7 @@ def call_payment_gateway(order_id: str, amount_cents: int) -> dict:
             response = requests.post(
                 PAYMENT_GATEWAY_URL,
                 json={"order_id": order_id, "amount_cents": amount_cents},
-                timeout=5,
+                timeout=10,
             )
             response.raise_for_status()
             return response.json()
