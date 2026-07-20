@@ -39,6 +39,7 @@ def checkout():
     order_id = payload["order_id"]
     amount_cents = payload["amount_cents"]
 
+    app.logger.info("processing checkout for order %s", order_id)
     result = call_payment_gateway(order_id, amount_cents)
     return jsonify({"status": "charged", "order_id": order_id, "gateway": result})
 
